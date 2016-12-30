@@ -7,13 +7,17 @@ IMyClass,
 System.Classes;
 
   type
-  TMyClassImpl = class(IMyClassBase)
+  TMyClassImpl = class(TObject, IMyClassBase)
   public
-    function ReturnSomeInteger(Data: PAnsiChar; LenData: int32): int32; override; stdcall;
-    procedure GetSomeNumber(var Number: int32); override; stdcall;
-    procedure Shake; override; stdcall;
+    function ReturnSomeInteger(Data: PAnsiChar; LenData: int32): int32;  stdcall;
+    procedure GetSomeNumber(var Number: int32);  stdcall;
+    procedure Shake;  stdcall;
     constructor Create; overload;
     destructor Destroy; override;
+  protected
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
   private
     SomeNumber: int32;
     SomeInteger: int32;
@@ -47,6 +51,24 @@ end;
 
 destructor TMyClassImpl.Destroy;
 begin
+end;
+
+function TMyClassImpl._Release: Integer;
+begin
+  Result := 1;
+end;
+
+function TMyClassImpl.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := E_NOINTERFACE;
+end;
+
+function TMyClassImpl._AddRef: Integer;
+begin
+  Result := 1;
 end;
 
 end.
